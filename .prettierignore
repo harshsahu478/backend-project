@@ -1,0 +1,14 @@
+# Add files here to ignore them from prettier formatting
+
+*.env
+.env
+.env.* 
+
+/.vscode
+
+/dist
+/build
+/coverage
+/node_modules
+package-lock.json
+yarn.lock
