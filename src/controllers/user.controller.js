@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { log } from "console";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose"
 
 const cookieOptions = {
   httpOnly: true,
@@ -352,7 +353,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       },
     },
     {
-      $addfields: {
+      $addFields: {
         suscribersCount: {
           $size: "$suscribers",
         },
@@ -361,7 +362,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         },
         isSubscribed: {
           $cond: {
-            $if: { $in: [req.user?._id, "$suscribers.suscribe"] },
+            if: { $in: [req.user?._id, "$suscribers.suscribe"] },
             then: true,
             else: false,
           },
@@ -403,17 +404,17 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     {
       $lookup: {
         from: "videos",
-        localField: "_id",
-        foreignField: "watchHistory",
+        localField: "watchHistory",
+        foreignField: "_id",
         as: "watchHistory",
         pipeline: [
           {
             $lookup: {
-              from: "user",
+              from: "users",
               localField: "owner",
               foreignField: "_id",
               as: "owner",
-              pileline: [
+              pipeline: [
                 {
                   $project: {
                     fullname: 1,
@@ -441,7 +442,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        user[0].wathHistory,
+        user[0].watchHistory,
         "watch History fetched successfully"
       )
     );
